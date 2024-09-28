@@ -1,0 +1,42 @@
+---
+title: "Predicting Salary of Major League Baseball Players - Draft"
+author: "Stephen Su, Thomas Black; MAST90111"
+output:
+  pdf_document:
+    number_sections: no
+bibliography: report.bib
+csl: apa.csl
+urlcolor: blue
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+opts_chunk$set(echo = TRUE, message = FALSE, comment = "#>")
+library(tidyverse)
+read_chunk("report.R")
+```
+
+# Introduction
+
+Data: @james2013. Model and predict `log(Salary)` by `Hits` and `Years`.
+
+200 training observations, 63 test observations.
+
+```{r data}
+```
+
+# Model fitting and evaluation
+
+## Univariate Normal approximation
+
+```{r normal}
+```
+
+## Univariate kernel density estimation
+
+```{r kde}
+```
+
+\newpage
+
+# References

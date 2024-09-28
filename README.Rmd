@@ -8,7 +8,7 @@ output: github_document
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-# Predicting Salary of Major League Baseball Players Using Nonparametric Methods
+# Predicting Salary of Major League Baseball Players
 
 This repository consists of an R project for MAST90111 - Advanced Statistical Modelling, holding the source files for reproducing the deliverable, including the code files and their version history.
 

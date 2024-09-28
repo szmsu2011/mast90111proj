@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Predicting Salary of Major League Baseball Players Using Nonparametric Methods
+# Predicting Salary of Major League Baseball Players
 
 This repository consists of an R project for MAST90111 - Advanced
 Statistical Modelling, holding the source files for reproducing the
