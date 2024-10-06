@@ -63,7 +63,7 @@ Instead of assuming $f$ is a Gaussian density, which is not necessarily true, we
 
 for some $h > 0$, with $K \triangleq \Phi$ being the Gaussian kernel. A $(1 - \alpha)$ confidence interval is thus obtainable.
 
-The bandwidth $h$ is selected by (1) the rule-of-thumb method: $\hat{h} = 1.06n^{-0.2}\min\{\hat{\sigma}_{\text{unbiased}}, \text{IQR}/1.34\}$, and (2) cross-validation $\hat{h} = \arg\min_{h > 0} \text{LSCV}(h)$.
+The bandwidth $h$ is selected by (1) the rule-of-thumb method: $\hat{h} = 1.06n^{-0.2}\min\{\hat{\sigma}_{\text{unbiased}}, \text{IQR}/1.34\}$, and (2) cross-validation: $\hat{h} = \arg\min_{h > 0} \text{LSCV}(h)$.
 
 ## Evaluation of univariate prediction methods
 
