@@ -34,14 +34,14 @@ sum(between(
   binom.test(63)
 
 ## ---- univar-fit-plot
-span <- extendrange(train$lSalary, f = 0.1)
-tibble(
-  x = kd_rot$x,
-  Normal = dnorm(x, mean(train$lSalary), sd(train$lSalary)),
-  `KDE(ROT)` = kd_rot$y,
-  `KDE(CV)` = kd_cv$y
+bind_rows(
+  tibble(
+    x = kd_cv$x, type = "Normal",
+    f = dnorm(x, mean(train$lSalary), sd(train$lSalary))
+  ),
+  tibble(x = kd_rot$x, type = "KDE (ROT)", f = kd_rot$y),
+  tibble(x = kd_cv$x, type = "KDE (CV)", f = kd_cv$y)
 ) |>
-  pivot_longer(!x, names_to = "type", values_to = "f") |>
   ggplot() +
   geom_line(aes(x, f, col = type)) +
   geom_point(aes(x, 0), tibble(x = test$lSalary), shape = 1) +
