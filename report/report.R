@@ -32,3 +32,19 @@ sum(between(
   kd_cv$x[which.min(abs(cdf_cv - .75))]
 )) |>
   binom.test(63)
+
+## ---- univar-fit-plot
+span <- extendrange(train$lSalary, f = 0.1)
+tibble(
+  x = kd_rot$x,
+  Normal = dnorm(x, mean(train$lSalary), sd(train$lSalary)),
+  `KDE(ROT)` = kd_rot$y,
+  `KDE(CV)` = kd_cv$y
+) |>
+  pivot_longer(!x, names_to = "type", values_to = "f") |>
+  ggplot() +
+  geom_line(aes(x, f, col = type)) +
+  geom_point(aes(x, 0), tibble(x = test$lSalary), shape = 1) +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  labs(x = "log(Salary)", y = expr(hat(f)), col = "")
