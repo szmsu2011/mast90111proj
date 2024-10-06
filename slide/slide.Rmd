@@ -1,0 +1,47 @@
+---
+title: "MAST90111 Advanced Statistical Modelling"
+subtitle: "Predicting Salary of Major League Baseball Players"
+author: "Stephen Su, Thomas Black"
+date: "October 2024"
+output:
+  xaringan::moon_reader:
+    nature:
+      highlightLines: true
+    css: xaringan-themer.css
+---
+
+```{r setup, echo = FALSE, cache = FALSE, results = 'hide'}
+library(knitr)
+options(
+  htmltools.dir.version = FALSE, htmltools.preserve.raw = FALSE,
+  tibble.width = 60, tibble.print_min = 6
+)
+opts_chunk$set(
+  echo = TRUE, warning = FALSE, message = FALSE, comment = "#>",
+  fig.retina = 3, fig.align = "center", fig.show = "hold", dpi = 110,
+  dev.args = list(png = list(type = "cairo"))
+)
+```
+```{r xaringan-themer, include = FALSE, warning = FALSE}
+library(xaringanthemer)
+style_mono_accent(
+  base_color = "#000F46",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google = google_font("Montserrat", "400", "400i"),
+  code_font_google = google_font("Fira Mono")
+)
+```
+
+```{r external, include = FALSE, cache = FALSE}
+read_chunk("slide.R")
+```
+
+## Introduction
+
+---
+
+## References
+
+- Clopper, C. J., & Pearson, E. S. (1934). The use of confidence or fiducial limits illustrated in the case of the binomial. *Biometrika*, *26*(4), 404--413.
+
+- James, G., Witten, D., Hastie, T., Tibshirani, R., et al. (2013). *An introduction to statistical learning*. Springer.

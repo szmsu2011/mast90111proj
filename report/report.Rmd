@@ -13,7 +13,8 @@ urlcolor: blue
 library(knitr)
 opts_chunk$set(echo = TRUE, message = FALSE, comment = "#>")
 library(tidyverse)
-read_chunk("report.R")
+read_chunk("../R/report.R")
+read_chunk("../R/shared.R")
 ```
 
 # Introduction
