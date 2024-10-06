@@ -34,7 +34,7 @@ We assume the variables are approximately continuous on $\mathbb{R}$ as salary i
 Suppose we only observe a random sample of the salary variable and wish to predict the salary of another randomly selected player, the best (in mean quadratic error) predictor is simply the sample (arithmetic) mean. Instead, we model the density $f$ using some estimator $\hat{f}$, which allows the generation of a (central) $(1 - \alpha)$ confidence interval of prediction by
 \vspace{0em}
 \begin{align*}
-  C_\alpha = \left\{[a, b] : \int_{-\infty}^a \hat{f}(x)dx = \frac{\alpha}{2}, \int_{-\infty}^b \hat{f}(x)dx = 1 - \frac{\alpha}{2}\right\}
+  \left\{[a, b] : \int_{-\infty}^a \hat{f}(x)dx = \frac{\alpha}{2}, \int_{-\infty}^b \hat{f}(x)dx = 1 - \frac{\alpha}{2}\right\}
 \end{align*}
 
 ## Prediction with Normality assumption
@@ -48,10 +48,10 @@ The common parametric approach is to assume the $\log$ salary follows a $\text{N
 The convention is to estimate $\sigma^2$ with unbiased sample variance, $\hat{\sigma}_{\text{unbiased}}^2$. As such, the central $(1 - \alpha)$ confidence interval of prediction is given by
 \vspace{0em}
 \begin{align*}
-  \left[\bar{Y} + \Phi\left(\frac{\alpha}{2}\right)\frac{1}{n - 1}\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\rVert^2, \bar{Y} + \Phi\left(1 - \frac{\alpha}{2}\right)\frac{1}{n - 1}\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\rVert^2\right]
+  G_\alpha = \left[\bar{Y} + \Phi\left(\frac{\alpha}{2}\right)\frac{1}{n - 1}\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\rVert^2, \bar{Y} + \Phi\left(1 - \frac{\alpha}{2}\right)\frac{1}{n - 1}\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\rVert^2\right]
 \end{align*}
 
-If Normality holds, $\mathbb{P}(Y_{n + 1} \in C_\alpha) \rightarrow 1 - \alpha$ in probability as $n \rightarrow \infty$.
+If Normality holds, $\mathbb{P}(Y_{n + 1} \in G_\alpha) \rightarrow 1 - \alpha$ in probability as $n \rightarrow \infty$.
 
 ## Prediction with kernel density estimation
 
@@ -62,6 +62,8 @@ Instead of assuming $f$ is a Gaussian density, which is not necessarily true, we
 \end{align*}
 
 for some $h > 0$, with $K \triangleq \Phi$ being the Gaussian kernel. A $(1 - \alpha)$ confidence interval is thus obtainable.
+
+The bandwidth $h$ is selected by (1) the rule-of-thumb method: $\hat{h} = 1.06n^{-0.2}\min\{\hat{\sigma}_{\text{unbiased}}, \text{IQR}/1.34\}$, and (2) cross-validation $\hat{h} = \arg\min_{h > 0} \text{LSCV}(h)$.
 
 ## Evaluation of univariate prediction methods
 
@@ -77,9 +79,9 @@ For both the parametric (Normality) and nonparametric (KDE) methods for construc
   H_0: p = 0.5; H_1: p \neq 0.5
 \end{align*}
 
-Here $p$ is the probability of a random test observation being included in the confidence interval constructed using the training set. An exact Binomial test [@clopper1934] is performed. We find that, $35$% (95% CI: $[0.23, 0.48]$, p-value: $0.0226$) of test observations are included in the parametric confidence interval, c.f. $44$% (95% CI: $[0.32, 0.58]$, p-value: $0.45$) included in the nonparametric confidence interval. The nonparametric approach is evidently more robust since less assumptions.
+Here $p$ is the probability of a random test observation being included in the confidence interval constructed using the training set. An exact Binomial test [@clopper1934] is performed. We find that, $35$% (95% CI: $[0.23, 0.48]$, p-value: $0.0226$) of test observations are included in the parametric confidence interval, c.f. $44$% (95% CI: $[0.32, 0.58]$, p-value: $0.45$) included in the nonparametric KDE confidence intervals (same for both ROT/LSCV methods). The nonparametric method is evidently more robust since less assumptions.
 
-```{r univar-fit-plot, echo = FALSE, dpi = 400, fig.height = 4, fig.cap = "The density curves are above are estimated using the training set, while the data points are from the test set. We can see that the KDE curves approximate the distribution of the test data better."}
+```{r univar-fit-plot, echo = FALSE, dpi = 400, fig.height = 3.8, fig.cap = "The density curves are above are estimated using the training set, while the data points are from the test set. We can see that the KDE curves approximate the distribution of the test data better."}
 ```
 
 \newpage
