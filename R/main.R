@@ -1,3 +1,8 @@
+## ---- lib
+library(tidyverse)
+library(np)
+library(mgcv)
+
 ## ---- data
 data <- ISLR::Hitters |>
   mutate(lSalary = log(Salary)) |>
@@ -36,16 +41,52 @@ sum(between(
 ## ---- univar-fit-plot
 bind_rows(
   tibble(
-    x = kd_cv$x, type = "Normal",
+    x = kd_cv$x, model = "Normal",
     f = dnorm(x, mean(train$lSalary), sd(train$lSalary))
   ),
-  tibble(x = kd_rot$x, type = "KDE (ROT)", f = kd_rot$y),
-  tibble(x = kd_cv$x, type = "KDE (LSCV)", f = kd_cv$y)
+  tibble(x = kd_rot$x, model = "KDE (ROT)", f = kd_rot$y),
+  tibble(x = kd_cv$x, model = "KDE (LSCV)", f = kd_cv$y)
 ) |>
   ggplot() +
-  geom_line(aes(x, f, col = type)) +
+  geom_line(aes(x, f, col = model)) +
   geom_point(aes(x, 0), tibble(x = test$lSalary), shape = 1) +
   annotate("text", x = 5.93, y = 0, label = "Test data", vjust = -1) +
   theme_bw() +
   theme(legend.position = "top") +
   labs(x = "log(Salary)", y = expr(hat(f)), col = "Trained curves")
+
+## ---- bivar-reg
+## Linear regression
+lr <- lm(lSalary ~ Hits, train)
+## Local linear regression
+ll <- npreg(lSalary ~ Hits, train, regtype = "ll")
+## Penalised cubic spline regression
+ps <- gam(lSalary ~ s(Hits, k = 35 + 2, bs = "ts"), data = train)
+
+## ---- bivar-reg-fit-plot
+bind_rows(
+  tibble(mhat = fitted(lr), model = "Linear"),
+  tibble(mhat = fitted(ll), model = "Local linear"),
+  tibble(mhat = fitted(ps), model = "Penalised spline")
+) |>
+  mutate(Hits = rep(train$Hits, 3)) |>
+  ggplot() +
+  geom_line(aes(Hits, mhat, col = model)) +
+  geom_point(aes(Hits, lSalary), test, shape = 1) +
+  annotate("text", x = 150, y = 5, label = "Test data points") +
+  theme_bw() +
+  theme(legend.position = "top") +
+  labs(x = "Hits", y = "log(Salary)", col = "Trained curves")
+
+## ---- bivar-reg-eval
+lr_pred <- predict(lr, list(Hits = test$Hits))
+ll_pred <- predict(ll, newdata = list(Hits = test$Hits))
+ps_pred <- predict(ps, list(Hits = test$Hits))
+bivar_err <- tibble(
+  Linear = (test$lSalary - lr_pred)^2,
+  `Local linear` = (test$lSalary - ll_pred)^2,
+  `Penalised spline` = (test$lSalary - ps_pred)^2
+) |>
+  pivot_longer(everything(), names_to = "model", values_to = "err")
+t(summarise(group_by(bivar_err, model), `Test MSE` = mean(err))) |>
+  kable()

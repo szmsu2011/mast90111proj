@@ -20,6 +20,7 @@ To reproduce the deliverables of the project, you will need to install the follo
 install.packages("tidyverse")
 install.packages("xaringan")
 install.packages("xaringanthemer")
+install.packages("np")
 install.packages("mgcv")
 install.packages("tinytex")
 tinytex::install_tinytex()
@@ -38,5 +39,3 @@ The presentation of the project consists of an HTML slide rendered by R Markdown
 ```{r render-slide, eval = FALSE}
 rmarkdown::render("slide/slide.Rmd")
 ```
-
-The [report](https://github.com/szmsu2011/mast90111proj/tree/main/report) directory consists of source files for reproducing the PDF report. The [slide](https://github.com/szmsu2011/mast90111proj/tree/main/slide) directory consists of source files for reproducing the HTML slide.

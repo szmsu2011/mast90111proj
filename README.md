@@ -16,6 +16,7 @@ the following packages and their dependencies as follows:
 install.packages("tidyverse")
 install.packages("xaringan")
 install.packages("xaringanthemer")
+install.packages("np")
 install.packages("mgcv")
 install.packages("tinytex")
 tinytex::install_tinytex()
@@ -36,9 +37,3 @@ Markdown with the [xaringan](https://github.com/yihui/xaringan) package.
 ``` r
 rmarkdown::render("slide/slide.Rmd")
 ```
-
-The
-[report](https://github.com/szmsu2011/mast90111proj/tree/main/report)
-directory consists of source files for reproducing the PDF report. The
-[slide](https://github.com/szmsu2011/mast90111proj/tree/main/slide)
-directory consists of source files for reproducing the HTML slide.

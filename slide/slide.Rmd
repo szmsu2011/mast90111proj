@@ -21,7 +21,6 @@ opts_chunk$set(
   fig.retina = 3, fig.align = "center", fig.show = "hold", dpi = 110,
   dev.args = list(png = list(type = "cairo"))
 )
-library(tidyverse)
 ```
 ```{r xaringan-themer, include = FALSE, warning = FALSE}
 library(xaringanthemer)
@@ -35,6 +34,8 @@ style_mono_accent(
 
 ```{r external, include = FALSE, cache = FALSE}
 read_chunk("../R/main.R")
+```
+```{r lib, include = FALSE}
 ```
 
 ## Introduction
@@ -93,6 +94,39 @@ $$H_0: p = 0.5; H_1: p \neq 0.5$$
 
 ---
 
+## Bivariate regression
+
+- Suppose we also observe the cumulated number of **hits** $X_1$.
+
+- We wish to estimate $m(x) = \mathbb{E}(Y | X_1 = x)$.
+
+- For observation $(X_{n + 1}, Y_{n + 1})$, use $\hat{m}(X_{n + 1})$ as the predictor for the "unknown" (test) $Y_{n + 1}$.
+
+- Assume Normality - linear regression (a parametric approach); by OLS:
+
+$$m(x) = \beta_0 + \beta_1x$$
+
+- Local linear regression (a nonparametric approach): $p = 1$ as we are estimating the zero derivative; by LSCV.
+
+$$m(x) \approx m(x_0) + m'(x_0)(x - x_0)$$
+
+- Penalised cubic spline regression (a nonparametric approach): with $L = \min\{200 / 4, 35\} = 35$; by GCV.
+
+$$m(x) = s(x)$$
+
+---
+
+## Bivariate regression: evaluation
+
+```{r bivar-reg, include = FALSE, echo = FALSE}
+```
+```{r bivar-reg-fit-plot, echo = FALSE, dpi = 400, fig.height = 3.2}
+```
+```{r bivar-reg-eval, echo = FALSE}
+```
+
+---
+
 ## Open and reproducible work
 
 The source files and version histories are available on **Github**.
@@ -103,6 +137,7 @@ The source files and version histories are available on **Github**.
 install.packages("tidyverse")
 install.packages("xaringan")
 install.packages("xaringanthemer")
+install.packages("np")
 install.packages("mgcv")
 install.packages("tinytex")
 tinytex::install_tinytex()
@@ -124,6 +159,6 @@ rmarkdown::render("slide/slide.Rmd")
 
 ## References
 
-- Clopper, C. J., & Pearson, E. S. (1934). The use of confidence or fiducial limits illustrated in the case of the binomial. *Biometrika*, *26*(4), 404--413. [https://doi.org/10.2307/2331986](https://doi.org/10.2307/2331986)
+- Clopper, C. J., & Pearson, E. S. (1934). The use of confidence or fiducial limits illustrated in the case of the binomial. *Biometrika*, *26*(4), 404-413. [https://doi.org/10.2307/2331986](https://doi.org/10.2307/2331986)
 
 - James, G., Witten, D., Hastie, T., Tibshirani, R., et al. (2013). *An introduction to statistical learning*. Springer.

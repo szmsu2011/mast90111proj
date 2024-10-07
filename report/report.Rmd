@@ -12,8 +12,9 @@ urlcolor: blue
 ```{r setup, include = FALSE}
 library(knitr)
 opts_chunk$set(echo = TRUE, message = FALSE, comment = "#>")
-library(tidyverse)
 read_chunk("../R/main.R")
+```
+```{r lib, include = FALSE}
 ```
 
 # Introduction

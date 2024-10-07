@@ -32,6 +32,7 @@ class: center, middle, inverse, title-slide
 
 
 
+
 ## Introduction
 
 - Aim: predict **salary** (log scaled) of major league baseball players by cumulated **hits** and **years** in profession.
@@ -90,6 +91,40 @@ test &lt;- setdiff(data, train)
 
 ---
 
+## Bivariate regression
+
+- Suppose we also observe the cumulated number of **hits** `\(X_1\)`.
+
+- We wish to estimate `\(m(x) = \mathbb{E}(Y | X_1 = x)\)`.
+
+- For observation `\((X_{n + 1}, Y_{n + 1})\)`, use `\(\hat{m}(X_{n + 1})\)` as the predictor for the "unknown" (test) `\(Y_{n + 1}\)`.
+
+- Assume Normality - linear regression (a parametric approach); by OLS:
+
+`$$m(x) = \beta_0 + \beta_1x$$`
+
+- Local linear regression (a nonparametric approach): `\(p = 1\)` as we are estimating the zero derivative; by LSCV.
+
+`$$m(x) \approx m(x_0) + m'(x_0)(x - x_0)$$`
+
+- Penalised cubic spline regression (a nonparametric approach): with `\(L = \min\{200 / 4, 35\} = 35\)`; by GCV.
+
+`$$m(x) = s(x)$$`
+
+---
+
+## Bivariate regression: evaluation
+
+
+&lt;img src="slide_files/figure-html/bivar-reg-fit-plot-1.png" width="2800" style="display: block; margin: auto;" /&gt;
+
+|         |          |             |                 |
+|:--------|:---------|:------------|:----------------|
+|model    |Linear    |Local linear |Penalised spline |
+|Test MSE |0.5995660 |0.5995660    |0.5401178        |
+
+---
+
 ## Open and reproducible work
 
 The source files and version histories are available on **Github**.
@@ -100,6 +135,7 @@ The source files and version histories are available on **Github**.
 install.packages("tidyverse")
 install.packages("xaringan")
 install.packages("xaringanthemer")
+install.packages("np")
 install.packages("mgcv")
 install.packages("tinytex")
 tinytex::install_tinytex()
@@ -121,7 +157,7 @@ rmarkdown::render("slide/slide.Rmd")
 
 ## References
 
-- Clopper, C. J., &amp; Pearson, E. S. (1934). The use of confidence or fiducial limits illustrated in the case of the binomial. *Biometrika*, *26*(4), 404--413. [https://doi.org/10.2307/2331986](https://doi.org/10.2307/2331986)
+- Clopper, C. J., &amp; Pearson, E. S. (1934). The use of confidence or fiducial limits illustrated in the case of the binomial. *Biometrika*, *26*(4), 404-413. [https://doi.org/10.2307/2331986](https://doi.org/10.2307/2331986)
 
 - James, G., Witten, D., Hastie, T., Tibshirani, R., et al. (2013). *An introduction to statistical learning*. Springer.
     </textarea>
