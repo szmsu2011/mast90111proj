@@ -16,6 +16,8 @@ the following packages and their dependencies as follows:
 install.packages("tidyverse")
 install.packages("xaringan")
 install.packages("xaringanthemer")
+install.packages("mgcv")
+install.packages("tinytex")
 tinytex::install_tinytex()
 ```
 

@@ -34,11 +34,94 @@ class: center, middle, inverse, title-slide
 
 ## Introduction
 
+- Aim: predict **salary** (log scaled) of major league baseball players by cumulated **hits** and **years** in profession.
+
+- Assumption: all variables above are continuous on `\(\mathbb{R}\)`. Also, all conditions mentioned in lecture hold.
+
+- A data set of 263 major league players from the 1986 and 1987 seasons (James et al., 2013).
+
+- Randomly sampled: 200 observations in training set, 63 in test set.
+
+
+``` r
+set.seed(90111)
+train &lt;- slice_sample(data, n = 200)
+test &lt;- setdiff(data, train)
+```
+
+- Nonparametric/semiparametric models are fitted, using the data in the training set, as well as their conventional parametric counterparts.
+
+- The predictive performance of the methods are evaluated and compared, using the data in the test set.
+
+---
+
+## Univariate prediction
+
+- Suppose only the log **salary** variable `\(Y\)` is observable.
+
+- Sample mean: best point predictor in terms of `\(\ell_2\)`-loss.
+
+- Interval predictor: suppose `\(\hat{f}\)` is an estimate of the p.d.f. of `\(Y\)`, then a central `\((1 - \alpha)\)` confidence interval of prediction is
+
+`$$\left\{[a, b] : \int_{-\infty}^a \hat{f}(x)dx = \frac{\alpha}{2}, \int_{-\infty}^b \hat{f}(x)dx = 1 - \frac{\alpha}{2}\right\}$$`
+
+- If we assume Normality (a parametric approach): `\(Y \sim \text{N}(\mu, \sigma^2)\)` then
+
+`$$\hat{f}(x) = \phi\left(\frac{x - \hat\mu}{\hat\sigma}\right)$$`
+
+- Kernel density estimation (a nonparametric approach)
+
+`$$\hat{f}(x) = \frac{1}{nh} \sum_{i = 1}^n K\left(\frac{x - Y_i}{h}\right) \text{ for some } h &gt; 0$$`
+
+---
+
+## Univariate prediction: evaluation
+
+- Let `\(p\)` be the proportion of **test** data points included inside the **trained** 50% central confidence interval, we have the exact Binomial test (Clopper &amp; Pearson, 1934) given by
+
+`$$H_0: p = 0.5; H_1: p \neq 0.5$$`
+
+- Normal: `\(35\)`% (95% CI: `\([0.23, 0.48]\)`, p-value: `\(0.0226\)`).
+
+- KDE (ROT and LSCV): `\(44\)`% (95% CI: `\([0.32, 0.58]\)`, p-value: `\(0.45\)`).
+
+
+&lt;img src="slide_files/figure-html/univar-fit-plot-1.png" width="2800" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Open and reproducible work
+
+The source files and version histories are available on **Github**.
+
+**Install required dependencies (R console)**
+
+```r
+install.packages("tidyverse")
+install.packages("xaringan")
+install.packages("xaringanthemer")
+install.packages("mgcv")
+install.packages("tinytex")
+tinytex::install_tinytex()
+```
+
+**Usage (command line)**
+
+```zsh
+git clone https://github.com/szmsu2011/mast90111proj
+cd mast90111proj
+R
+```
+```r
+rmarkdown::render("report/report.Rmd")
+rmarkdown::render("slide/slide.Rmd")
+```
+
 ---
 
 ## References
 
-- Clopper, C. J., &amp; Pearson, E. S. (1934). The use of confidence or fiducial limits illustrated in the case of the binomial. *Biometrika*, *26*(4), 404--413.
+- Clopper, C. J., &amp; Pearson, E. S. (1934). The use of confidence or fiducial limits illustrated in the case of the binomial. *Biometrika*, *26*(4), 404--413. [https://doi.org/10.2307/2331986](https://doi.org/10.2307/2331986)
 
 - James, G., Witten, D., Hastie, T., Tibshirani, R., et al. (2013). *An introduction to statistical learning*. Springer.
     </textarea>

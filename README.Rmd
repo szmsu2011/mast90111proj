@@ -20,6 +20,8 @@ To reproduce the deliverables of the project, you will need to install the follo
 install.packages("tidyverse")
 install.packages("xaringan")
 install.packages("xaringanthemer")
+install.packages("mgcv")
+install.packages("tinytex")
 tinytex::install_tinytex()
 ```
 
