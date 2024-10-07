@@ -1,5 +1,5 @@
 ---
-title: "Predicting Salary of Major League Baseball Players - Draft"
+title: "Predicting Salary of Major League Baseball Players"
 author: "Stephen Su, Thomas Black; MAST90111"
 output:
   pdf_document:
@@ -52,7 +52,7 @@ The convention is to estimate $\sigma^2$ with unbiased sample variance, $\hat{\s
   G_\alpha = \left[\bar{Y} + \Phi\left(\frac{\alpha}{2}\right)\frac{1}{n - 1}\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\rVert^2, \bar{Y} + \Phi\left(1 - \frac{\alpha}{2}\right)\frac{1}{n - 1}\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\rVert^2\right]
 \end{align*}
 
-If Normality holds, $\mathbb{P}(Y_{n + 1} \in G_\alpha) \rightarrow 1 - \alpha$ in probability as $n \rightarrow \infty$.
+If the assumption holds, $\overline{\mathbf{1}(Y_{n + 1} \in G_\alpha)} \rightarrow 1 - \alpha$ in probability as $n \rightarrow \infty$.
 
 ## Prediction with kernel density estimation
 
