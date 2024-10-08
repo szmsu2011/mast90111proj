@@ -94,6 +94,15 @@ $$H_0: p = 0.5; H_1: p \neq 0.5$$
 
 ---
 
+## Univariate prediction: evaluation
+
+- The result obtained above subjects to the variability of the sampling process of training/test data. We thus repeat the sampling, fitting and evaluation process $m = 100$ times.
+
+```{r univar-repeat-eval, echo = FALSE, dpi = 400, fig.height = 3.5}
+```
+
+---
+
 ## Bivariate regression
 
 - Suppose we also observe the cumulated number of **hits** $X_1$.
@@ -123,6 +132,17 @@ $$m(x) = s(x)$$
 ```{r bivar-reg-fit-plot, echo = FALSE, dpi = 400, fig.height = 3.2}
 ```
 ```{r bivar-reg-eval, echo = FALSE}
+```
+
+---
+
+## Bivariate regression: evaluation
+
+- The result obtained above subjects to the variability of the sampling process of training/test data. An example is the local linear model and the linear regression coincides by chance. We thus repeat the sampling, fitting and evaluation process $m = 100$ times.
+
+```{r bivar-repeat-eval, include = FALSE, cache = TRUE}
+```
+```{r bivar-repeat-eval-plot, echo = FALSE, dpi = 400, fig.height = 3.2}
 ```
 
 ---

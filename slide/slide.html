@@ -91,6 +91,14 @@ test &lt;- setdiff(data, train)
 
 ---
 
+## Univariate prediction: evaluation
+
+- The result obtained above subjects to the variability of the sampling process of training/test data. We thus repeat the sampling, fitting and evaluation process `\(m = 100\)` times.
+
+&lt;img src="slide_files/figure-html/univar-repeat-eval-1.png" width="2800" style="display: block; margin: auto;" /&gt;
+
+---
+
 ## Bivariate regression
 
 - Suppose we also observe the cumulated number of **hits** `\(X_1\)`.
@@ -122,6 +130,15 @@ test &lt;- setdiff(data, train)
 |:--------|:---------|:------------|:----------------|
 |model    |Linear    |Local linear |Penalised spline |
 |Test MSE |0.5995660 |0.5995660    |0.5401178        |
+
+---
+
+## Bivariate regression: evaluation
+
+- The result obtained above subjects to the variability of the sampling process of training/test data. An example is the local linear model and the linear regression coincides by chance. We thus repeat the sampling, fitting and evaluation process `\(m = 100\)` times.
+
+
+&lt;img src="slide_files/figure-html/bivar-repeat-eval-plot-1.png" width="2800" style="display: block; margin: auto;" /&gt;
 
 ---
 

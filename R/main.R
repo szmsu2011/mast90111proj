@@ -55,6 +55,38 @@ bind_rows(
   theme(legend.position = "top") +
   labs(x = "log(Salary)", y = expr(hat(f)), col = "Trained curves")
 
+## ---- univar-repeat-eval
+## Repeat evaluation 100 times
+t(replicate(100, {
+  train <- slice_sample(data, n = 200)
+  test <- setdiff(data, train)
+  muhat <- mean(train$lSalary)
+  sigma2hat <- var(train$lSalary)
+  nc <- mean(abs(test$lSalary - muhat) < qnorm(.75) * sqrt(sigma2hat))
+  kd_rot <- density(train$lSalary, bw = "nrd0")
+  kd_cv <- density(train$lSalary, bw = "ucv")
+  cdf_rot <- cumsum(kd_rot$y / sum(kd_rot$y))
+  cdf_cv <- cumsum(kd_cv$y / sum(kd_cv$y))
+  kdrc <- mean(between(
+    test$lSalary,
+    kd_rot$x[which.min(abs(cdf_rot - .25))],
+    kd_rot$x[which.min(abs(cdf_rot - .75))]
+  ))
+  kdcc <- mean(between(
+    test$lSalary,
+    kd_cv$x[which.min(abs(cdf_cv - .25))],
+    kd_cv$x[which.min(abs(cdf_cv - .75))]
+  ))
+  c(Normal = nc, `KDE (ROT)` = kdrc, `KDE (LSCV)` = kdcc)
+})) |>
+  as_tibble(.names_repair = "minimal") |>
+  pivot_longer(everything(), names_to = "model", values_to = "cov") |>
+  ggplot(aes(model, cov)) +
+  geom_boxplot(outlier.shape = 1) +
+  geom_hline(yintercept = 0.5, col = 3) +
+  theme_bw() +
+  labs(x = "Model", y = "Test coverage of 50% CI")
+
 ## ---- bivar-reg
 ## Linear regression
 lr <- lm(lSalary ~ Hits, train)
@@ -90,3 +122,30 @@ bivar_err <- tibble(
   pivot_longer(everything(), names_to = "model", values_to = "err")
 t(summarise(group_by(bivar_err, model), `Test MSE` = mean(err))) |>
   kable()
+
+## ---- bivar-repeat-eval
+## Repeat evaluation 100 times
+p <- t(replicate(100, {
+  train <- slice_sample(data, n = 200)
+  test <- setdiff(data, train)
+  lr <- lm(lSalary ~ Hits, train)
+  ll <- npreg(lSalary ~ Hits, train, regtype = "ll")
+  ps <- gam(lSalary ~ s(Hits, k = 35 + 2, bs = "ts"), data = train)
+  lr_pred <- predict(lr, list(Hits = test$Hits))
+  ll_pred <- predict(ll, newdata = list(Hits = test$Hits))
+  ps_pred <- predict(ps, list(Hits = test$Hits))
+  c(
+    Linear = mean((test$lSalary - lr_pred)^2),
+    `Local linear` = mean((test$lSalary - ll_pred)^2),
+    `Penalised spline` = mean((test$lSalary - ps_pred)^2)
+  )
+})) |>
+  as_tibble(.names_repair = "minimal") |>
+  pivot_longer(everything(), names_to = "model", values_to = "MSE") |>
+  ggplot(aes(model, MSE)) +
+  geom_boxplot(outlier.shape = 1) +
+  theme_bw() +
+  labs(x = "Model", y = "Test MSE")
+
+## ---- bivar-repeat-eval-plot
+p

@@ -11,7 +11,7 @@ urlcolor: blue
 
 ```{r setup, include = FALSE}
 library(knitr)
-opts_chunk$set(echo = TRUE, message = FALSE, comment = "#>")
+opts_chunk$set(warning = FALSE, message = FALSE, comment = "#>")
 read_chunk("../R/main.R")
 ```
 ```{r lib, include = FALSE}
@@ -83,6 +83,11 @@ For both the parametric (Normality) and nonparametric (KDE) methods for construc
 Here $p$ is the probability of a random test observation being included in the confidence interval constructed using the training set. An exact Binomial test [@clopper1934] is performed. We find that, $35$% (95% CI: $[0.23, 0.48]$, p-value: $0.0226$) of test observations are included in the parametric confidence interval, c.f. $44$% (95% CI: $[0.32, 0.58]$, p-value: $0.45$) included in the nonparametric KDE confidence intervals (same for both ROT/LSCV methods). The nonparametric method is evidently more robust since less assumptions.
 
 ```{r univar-fit-plot, echo = FALSE, dpi = 400, fig.height = 3.8, fig.cap = "The density curves are above are estimated using the training set, while the data points are from the test set. We can see that the KDE curves approximate the distribution of the test data better."}
+```
+
+Nevertheless, the realisation of test performances above subject to the variability of the training/test sampling process. Therefore, we repeat the sampling, fitting and evaluation process above $m = 100$ times.
+
+```{r univar-repeat-eval, echo = FALSE, dpi = 400, fig.height = 3.1, fig.cap = "Both the nonparametric KDE confidence intervals consistently capture about 50% of the test data."}
 ```
 
 \newpage
