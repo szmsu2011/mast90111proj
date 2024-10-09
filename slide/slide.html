@@ -111,11 +111,11 @@ test &lt;- setdiff(data, train)
 
 `$$m(x) = \beta_0 + \beta_1x$$`
 
-- Local linear regression (a nonparametric approach): `\(p = 1\)` as we are estimating the zero derivative; by LSCV.
+- Local linear regression (a nonparametric approach): `\(p = 1\)` as we are estimating the zero derivative; by LSCV:
 
 `$$m(x) \approx m(x_0) + m'(x_0)(x - x_0)$$`
 
-- Penalised cubic spline regression (a nonparametric approach): with `\(L = \min\{200 / 4, 35\} = 35\)`; by GCV.
+- Penalised cubic spline regression (a nonparametric approach): with `\(L = \min\{200 / 4, 35\} = 35\)`; by GCV:
 
 `$$m(x) = s(x)$$`
 
@@ -126,10 +126,10 @@ test &lt;- setdiff(data, train)
 
 &lt;img src="slide_files/figure-html/bivar-reg-fit-plot-1.png" width="2800" style="display: block; margin: auto;" /&gt;
 
-|         |          |             |                 |
-|:--------|:---------|:------------|:----------------|
-|model    |Linear    |Local linear |Penalised spline |
-|Test MSE |0.5995660 |0.5995660    |0.5401178        |
+|          |          |             |                 |
+|:---------|:---------|:------------|:----------------|
+|model     |Linear    |Local linear |Penalised spline |
+|Test MSEP |0.5995660 |0.5995660    |0.5407159        |
 
 ---
 
@@ -139,6 +139,38 @@ test &lt;- setdiff(data, train)
 
 
 &lt;img src="slide_files/figure-html/bivar-repeat-eval-plot-1.png" width="2800" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Multivariate regression
+
+- Suppose we also observe the **years** played in major league `\(X_2\)`.
+
+- Thus we wish to estimate `\(m(\mathbf{x}) = \mathbb{E}(Y | \mathbf{X} = \mathbf{x})\)`.
+
+- For a new `\((\mathbf{X}_{n + 1}, Y_{n + 1})\)`, `\(\hat{m}(\mathbf{X}_{n + 1})\)` is the predictor for `\(Y_{n + 1}\)`.
+
+- Assume Normality - linear regression (a parametric approach); by OLS:
+
+`$$m(\mathbf{x}) = \mathbf{x}^\top\boldsymbol\beta$$`
+
+- Single index model (a semiparametric approach) via penalised spline:
+
+`$$m(\mathbf{x}) = s(\mathbf{x}^\top\boldsymbol\beta)$$`
+
+- Partial linear model (a semiparametric approach) with linear `\(X_1\)`:
+
+`$$m(\mathbf{x}) = \beta_0 + \beta_1 x_1 + s(x_2)$$`
+
+- Additive model (a semiparametric approach):
+
+`$$m(\mathbf{x}) = \beta_0 + s_1(x_1) + s_2(x_2)$$`
+
+---
+
+## Multivariate regression: evaluation
+
+&lt;img src="slide_files/figure-html/multivar-repeat-eval-1.png" width="2800" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -177,6 +209,8 @@ rmarkdown::render("slide/slide.Rmd")
 - Clopper, C. J., &amp; Pearson, E. S. (1934). The use of confidence or fiducial limits illustrated in the case of the binomial. *Biometrika*, *26*(4), 404-413. [https://doi.org/10.2307/2331986](https://doi.org/10.2307/2331986)
 
 - James, G., Witten, D., Hastie, T., Tibshirani, R., et al. (2013). *An introduction to statistical learning*. Springer.
+
+- Wood, S. N. (2011). Fast stable restricted maximum likelihood and marginal likelihood estimation of semiparametric generalized linear models. *Journal of the Royal Statistical Society (B)*, *73*(1), 3-36. [https://doi.org/10.1111/j.1467-9868.2010.00749.x](https://doi.org/10.1111/j.1467-9868.2010.00749.x)
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

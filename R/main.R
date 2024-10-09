@@ -81,7 +81,7 @@ t(replicate(100, {
 })) |>
   as_tibble(.names_repair = "minimal") |>
   pivot_longer(everything(), names_to = "model", values_to = "cov") |>
-  ggplot(aes(model, cov)) +
+  ggplot(aes(fct_inorder(model), cov)) +
   geom_boxplot(outlier.shape = 1) +
   geom_hline(yintercept = 0.5, col = 3) +
   theme_bw() +
@@ -93,7 +93,7 @@ lr <- lm(lSalary ~ Hits, train)
 ## Local linear regression
 ll <- npreg(lSalary ~ Hits, train, regtype = "ll")
 ## Penalised cubic spline regression
-ps <- gam(lSalary ~ s(Hits, k = 35 + 2, bs = "ts"), data = train)
+ps <- gam(lSalary ~ s(Hits, k = 35 + 2, bs = "cr"), data = train)
 
 ## ---- bivar-reg-fit-plot
 bind_rows(
@@ -120,7 +120,7 @@ bivar_err <- tibble(
   `Penalised spline` = (test$lSalary - ps_pred)^2
 ) |>
   pivot_longer(everything(), names_to = "model", values_to = "err")
-t(summarise(group_by(bivar_err, model), `Test MSE` = mean(err))) |>
+t(summarise(group_by(bivar_err, model), `Test MSEP` = mean(err))) |>
   kable()
 
 ## ---- bivar-repeat-eval
@@ -130,10 +130,10 @@ p <- t(replicate(100, {
   test <- setdiff(data, train)
   lr <- lm(lSalary ~ Hits, train)
   ll <- npreg(lSalary ~ Hits, train, regtype = "ll")
-  ps <- gam(lSalary ~ s(Hits, k = 35 + 2, bs = "ts"), data = train)
-  lr_pred <- predict(lr, list(Hits = test$Hits))
-  ll_pred <- predict(ll, newdata = list(Hits = test$Hits))
-  ps_pred <- predict(ps, list(Hits = test$Hits))
+  ps <- gam(lSalary ~ s(Hits, k = 35 + 2, bs = "cr"), data = train)
+  lr_pred <- predict(lr, test)
+  ll_pred <- predict(ll, newdata = test)
+  ps_pred <- predict(ps, test)
   c(
     Linear = mean((test$lSalary - lr_pred)^2),
     `Local linear` = mean((test$lSalary - ll_pred)^2),
@@ -141,11 +141,59 @@ p <- t(replicate(100, {
   )
 })) |>
   as_tibble(.names_repair = "minimal") |>
-  pivot_longer(everything(), names_to = "model", values_to = "MSE") |>
-  ggplot(aes(model, MSE)) +
+  pivot_longer(everything(), names_to = "model", values_to = "MSEP") |>
+  ggplot(aes(fct_inorder(model), MSEP)) +
   geom_boxplot(outlier.shape = 1) +
   theme_bw() +
-  labs(x = "Model", y = "Test MSE")
+  labs(x = "Model", y = "Test MSEP")
 
 ## ---- bivar-repeat-eval-plot
 p
+
+## ---- multivar-repeat-eval
+single_index <- function(X, Y) {
+  si <- function(beta_tail, X, Y, opt = TRUE, L = 10, fx = FALSE) {
+    beta <- c(1, beta_tail)
+    beta <- beta / sqrt(sum(beta^2))
+    Xb <- X %*% beta
+    fit <- gam(Y ~ s(Xb, bs = "cr", k = L + 2, fx = fx), method = "ML")
+    if (opt) {
+      fit$gcv.ubre
+    } else {
+      fit$beta <- beta
+      fit
+    }
+  }
+  f1 <- nlm(si, 20, X = X, Y = Y)
+  si(f1$estimate, X, Y, opt = FALSE, L = 37)
+}
+t(replicate(100, {
+  train <- slice_sample(data, n = 200)
+  test <- setdiff(data, train)
+  lr <- lm(lSalary ~ Hits + Years, train)
+  si <- single_index(as.matrix(train[, -1]), train$lSalary)
+  pl <- gam(
+    lSalary ~ Hits + s(Years, bs = "cr"),
+    data = train
+  )
+  am <- gam(
+    lSalary ~ s(Hits, k = 27, bs = "cr") + s(Years, bs = "cr"),
+    data = train
+  )
+  lr_pred <- predict(lr, test)
+  si_pred <- predict(si, list(Xb = as.matrix(test[, -1]) %*% si$beta))
+  pl_pred <- predict(pl, test)
+  am_pred <- predict(am, test)
+  c(
+    Linear = mean((test$lSalary - lr_pred)^2),
+    `Single index` = mean((test$lSalary - si_pred)^2),
+    `Partial linear` = mean((test$lSalary - pl_pred)^2),
+    Additive = mean((test$lSalary - am_pred)^2)
+  )
+})) |>
+  as_tibble(.names_repair = "minimal") |>
+  pivot_longer(everything(), names_to = "model", values_to = "MSEP") |>
+  ggplot(aes(fct_inorder(model), MSEP)) +
+  geom_boxplot(outlier.shape = 1) +
+  theme_bw() +
+  labs(x = "Model", y = "Test MSEP")
