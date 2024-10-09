@@ -151,6 +151,7 @@ p <- t(replicate(100, {
 p
 
 ## ---- multivar-repeat-eval
+## Repeat evaluation 100 times
 single_index <- function(X, Y) {
   si <- function(beta_tail, X, Y, opt = TRUE, L = 10, fx = FALSE) {
     beta <- c(1, beta_tail)
