@@ -28,7 +28,7 @@ A random sample without replacement of 200 observations are picked from the data
 ```{r data, include = FALSE}
 ```
 
-We assume the variables are approximately continuous on $\mathbb{R}$ as salary is log-transformed, and variables hits and years are mostly much greater than zero. The boundary effect around zero is negligible. Also, we assume the conditions outlined in lecture hold for both the training set and test set and for all variables.
+We assume the variables are approximately continuous on $\mathbb{R}$ as salary is log-transformed, and variables hits and years are mostly much greater than zero. The boundary effect around zero is negligible. Also, we assume that all conditions outlined per lecture notes hold, for both the training set and test set and for all variables.
 
 # Univariate prediction
 
@@ -143,7 +143,7 @@ All observed quantities used in fitting above comes from training data.
 ```{r bivar-reg-eval, echo = FALSE, tab.cap = "Predictive performance of the models."}
 ```
 
-In this particular training/test sample, the local linear regression is indistinguishable from the linear regression model for a large selected bandwidth, implying that $m(x)$ is roughly linear. A rather interesting observation is that the spline model successfully captures the boundary effect (note that is not an overfit, as the points are from test data). Nevertheless, The results obtained above subjects to the variability of the sampling process of training/test data. Thus, the sampling, fitting and evaluation process is repeated $m = 100$ times.
+In this particular training/test sample, the local linear regression is indistinguishable from the linear regression model for a large selected bandwidth, implying that $m(x)$ is roughly linear. A rather interesting observation is that the spline model successfully captures the boundary effect (not an overfit, for the points are all from the test data set). Nevertheless, The results obtained above subjects to the variability of the sampling process of training/test data. Thus, the sampling, fitting and evaluation process is repeated $m = 100$ times.
 
 ```{r bivar-repeat-eval, include = FALSE, cache = TRUE}
 ```
