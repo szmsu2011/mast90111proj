@@ -43,13 +43,13 @@ Suppose we only observe a random sample of the salary variable and wish to predi
 The common parametric approach is to assume the $\log$ salary follows a $\text{N}(\mu, \sigma^2)$ distribution for some $(\mu, \sigma^2)$ which are unknown. Under such an assumption, the sample mean is the unbiased, efficient and consistent estimator of $\mu$. However, there are various estimators of $\sigma^2$ under different metrics, examples are
 \vspace{0em}
 \begin{align*}
-  \hat{\sigma}_{\text{unbiased}}^2 = \frac{1}{n - 1}\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\rVert^2; \hat{\sigma}_{\text{MLE}}^2 = \frac{1}{n}\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\rVert^2; \hat{\sigma}_{\text{minMSE}}^2 = \frac{1}{n + 1}\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\rVert^2
+  \hat{\sigma}_{\text{unbiased}}^2 = \frac{1}{n - 1}\left\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\right\rVert^2; \hat{\sigma}_{\text{MLE}}^2 = \frac{1}{n}\left\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\right\rVert^2; \hat{\sigma}_{\text{minMSE}}^2 = \frac{1}{n + 1}\left\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\right\rVert^2
 \end{align*}
 
 The convention is to estimate $\sigma^2$ with unbiased sample variance, $\hat{\sigma}_{\text{unbiased}}^2$. As such, the central $(1 - \alpha)$ confidence interval of prediction is given by
 \vspace{0em}
 \begin{align*}
-  G_\alpha = \left[\bar{Y} + \phi\left(\frac{\alpha}{2}\right)\frac{1}{n - 1}\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\rVert^2, \bar{Y} + \phi\left(1 - \frac{\alpha}{2}\right)\frac{1}{n - 1}\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\rVert^2\right]
+  G_\alpha = \left[\bar{Y} + \phi\left(\frac{\alpha}{2}\right)\frac{1}{n - 1}\left\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\right\rVert^2, \bar{Y} + \phi\left(1 - \frac{\alpha}{2}\right)\frac{1}{n - 1}\left\lVert\mathbf{Y} - \bar{Y}\mathbf{1}\right\rVert^2\right]
 \end{align*}
 
 If the assumption holds, $\overline{\mathbf{1}(Y_{n + 1} \in G_\alpha)} \rightarrow 1 - \alpha$ in probability as $n \rightarrow \infty$.
@@ -89,6 +89,135 @@ Nevertheless, the realisation of test performances above subject to the variabil
 
 ```{r univar-repeat-eval, echo = FALSE, dpi = 400, fig.height = 3.1, fig.cap = "Both the nonparametric KDE confidence intervals consistently capture about 50% of the test data."}
 ```
+
+# Prediction via bivariate regression
+
+Suppose, in addition, we observe an additional covariate, the number of cumulative hits: $X_1$. Then the best predictor becomes the conditional expectation $\mathbb{E}[Y | X_1]$ (if $Y \perp X_1$, then $\mathbb{E}[Y | X_1] = \mathbb{E}[Y]$). A regression $m(x) = \mathbb{E}[Y | X_1 = x]$ is hence used as the predictor for some estimator $\hat{m}$ of $m$, via both parametric and nonparametric methods fitted with the training set.
+
+## Simple linear regression
+
+As the most ubiquitous parametric regression model, a linear regression assumes the conditional distribution $Y | X_1 = x \sim \text{N}(\beta_0 + \beta_1 x, \sigma^2)$, hence $m(x) = \beta_0 + \beta_1 x$. Therefore, the predictor of $Y$ given that $X_1 = x$ is
+\vspace{0em}
+\begin{align*}
+  \hat{m}(x) = \hat{\beta}_0 + \hat{\beta}_1 x; \left(\hat{\beta}_0, \hat{\beta}_1\right)^\top = \left(\mathbf{X}^\top\mathbf{X}\right)^{-1}\mathbf{X}^\top\mathbf{Y}
+\end{align*}
+
+whereby, $\left\{(\mathbf{X}, \mathbf{Y}) : \mathbf{X} = (\mathbf{1}_n, \mathbf{X}_1)\right\}$ is the training data set.
+
+## Local linear regression
+
+The aforementioned Normality assumption does not hold in most cases and we therefore need more flexible methods robust against a departure from Normality. The local linear regression (local polynomial, with order $p = 1$) belongs to the class of kernel regression models, that appeals to the Taylor expansion $m(x) = m(x_0) + m'(x_0)(x - x_0)$, with a fitting criterion minimising local weighted least square. The fit is given by
+\vspace{0em}
+\begin{align*}
+  \hat{m}(x) = \mathbf{e}_1^\top \left(\mathbf{X}^\top\mathbf{W}\mathbf{X}\right)^{-1}\mathbf{X}^\top\mathbf{W}\mathbf{Y}
+\end{align*}
+
+where $\mathbf{X} \triangleq ((X_i - x)^{j - 1})_{i = 1, j = 1}^{n, p + 1}$ and $\mathbf{W} \triangleq \text{diag}(K_h(x - X_i) : i = 1, \dots, n)$ (note: all from training data). The bandwidth $h$ is selected using cross-validation. The fit becomes all linear if $h \rightarrow \infty$.
+
+## Penalised cubic spline regression
+
+Spline is yet another nonparametric method that exploits the ability of piecewise polynomials to approximate any smooth function. The penalised cubic spline is among one of the most commonly used ones, by minimising the $L^2$-loss penalised by integrated square second derivative of fit. The fit is given by
+\vspace{0em}
+\begin{align*}
+  \hat{m}_\lambda(x) = \mathbf{B}^\top(x)\left(\mathcal{B}^\top\mathcal{B} + \lambda\mathbf{D}_2\right)^{-1}\mathcal{B}^\top\mathbf{Y}
+\end{align*}
+
+where $\mathbf{B}$ is the B-spline basis spanned by the range of $X_1$, $\mathcal{B} \triangleq (\mathbf{B}(X_1), \dots, \mathbf{B}(X_n))^\top; \mathbf{D}_2 \triangleq \int \mathbf{B}''(x)\mathbf{B}''(x)^\top dx$.
+
+In addition, we constructed the basis with $L = \min\left\{\frac{n}{4}, 35\right\}$ interior knots as suggested by @ruppert2002.
+
+The "smooth" parameter $\lambda$ is selected via the numerically stable generalised cross-validation (GCV) by
+\vspace{0em}
+\begin{align*}
+  \lambda \gets \arg\min_{\lambda > 0} \frac{n}{n - \text{tr}\left(\mathcal{B}\left(\mathcal{B}^\top\mathcal{B} + \lambda\mathbf{D}_2\right)^{-1}\mathcal{B}^\top\mathbf{Y}\right)} \sum_{i = 1}^n (Y_i - \hat{m}_\lambda(X_i))^2
+\end{align*}
+
+All observed quantities used in fitting above comes from training data.
+
+## Evaluation of bivariate regression methods
+
+```{r bivar-reg, include = FALSE, echo = FALSE}
+```
+```{r bivar-reg-fit-plot, echo = FALSE, dpi = 400, fig.height = 3.5, fig.cap = "The trained curves c.f. the test data points."}
+```
+```{r bivar-reg-eval, echo = FALSE, tab.cap = "Predictive performance of the models."}
+```
+
+In this particular training/test sample, the local linear regression is indistinguishable from the linear regression model for a large selected bandwidth, implying that $m(x)$ is roughly linear. A rather interesting observation is that the spline model successfully captures the boundary effect (note that is not an overfit, as the points are from test data). Nevertheless, The results obtained above subjects to the variability of the sampling process of training/test data. Thus, the sampling, fitting and evaluation process is repeated $m = 100$ times.
+
+```{r bivar-repeat-eval, include = FALSE, cache = TRUE}
+```
+```{r bivar-repeat-eval-plot, echo = FALSE, dpi = 400, fig.height = 3.1, fig.cap = "All three parametric and nonparametric models appear to possess similar predictive power under a likely linear dependency between the covariate and the response."}
+```
+
+# Prediction via multivariate regression
+
+Suppose we observe $p > 1$ covariates as vector: $\mathbf{X} \triangleq (X_1, \dots, X_p)$, thence the conditional expectation now has the form as: $m(\mathbf{x}) \triangleq \mathbb{E}[Y | \mathbf{X} = \mathbf{x}]$. Therefore, we construct and compare the parametric model and, to ensure generalisability to a larger $p$, semiparametric models (hence omitting multivariate nonparametric models).
+
+We demonstratively observe another covariate $X_2$: the number of years each player served in the major league, hence test the predictive power of $\hat{m}(\mathbf{x})$ by different parametric/semiparametric models.
+
+## Multiple linear regression
+
+The multiple linear regression is the higher-dimensional generalisation of simple linear regression, which assumes $Y | \mathbf{X} = \mathbf{x} \sim \text{N}(\beta_0 + \beta_1x_1 + \beta_2x_2, \sigma^2)$, therefore, $m(\mathbf{x}) = \beta_0 + \beta_1x_1 + \beta_2x_2$. The fit becomes
+\vspace{0em}
+\begin{align*}
+  \hat{m}(\mathbf{x}) = \hat{\beta}_0 + \hat{\beta}_1x_1 + \hat{\beta}_2x_2; \left(\hat{\beta}_0, \hat{\beta}_1, \hat{\beta}_2\right)^\top = \left(\mathbb{X}^\top\mathbb{X}\right)^{-1}\mathbb{X}^\top\mathbf{Y}
+\end{align*}
+
+and $\left\{(\mathbb{X}, \mathbf{Y}) : \mathbb{X} = \left(\mathbf{1}_n, (\mathbf{X}_1, \dots, \mathbf{X}_n)^\top\right)\right\}$ is (again) the training data set.
+
+## Semiparametric regression models
+
+The semiparametric models are all fitted using the **mgcv** package. In particular, the single-index model is initiated as an additive model to profile out the spline coefficient and smoothing parameter thus leaving only the linear coefficient $\boldsymbol\beta$ to be estimated via some Newton-based general purpose optimiser [@wood2011].
+
+### Single index model
+
+Again, the conditional Normality assumption for linear regression above does not necessarily hold. Nevertheless, the computation efficiency and interpretability of parametric models remain appealing, especially when the covariate is in very high dimension. The single index model is thus proposed as a semiparametric regression method which uses nonparametric method to estimate some unknown link function (instead of the canonical link) while keeping the linear parametric terms, in form $m(\mathbf{x}) = g(\beta_0 + \beta_1x_1 + \beta_2x_2)$ for some continuous $g$.
+
+We propose $s$, a penalised cubic regression spline, as an estimator of the link function $g$. The fit is given by
+\vspace{0em}
+\begin{align*}
+  \hat{m}(\mathbf{x}) = s\left(\hat{\beta}_0 + \hat{\beta}_1x_1 + \hat{\beta}_2x_2\right)
+\end{align*}
+
+For identifiability, we imposed constraints such that
+\vspace{0em}
+\begin{align*}
+  \hat{\beta}_0 > 0; \sqrt{\hat{\beta}_0^2 + \hat{\beta}_1^2 + \hat{\beta}_2^2} = 1
+\end{align*}
+
+### Partial linear model
+
+Nonetheless, we previously inferred that covariate $X_1$ influences the response in a linear way. An alternative semiparametric approach we may consider is the partial linear model with form $m(\mathbf{x}) = \beta_0 + \beta_1x_1 + g(x_2)$. A penalised cubic regression spline $s$ is used as the estimator of some unknown function $g$. The fit is given by
+\vspace{0em}
+\begin{align*}
+  \hat{m}(\mathbf{x}) = \hat{\beta}_0 + \hat{\beta}_1x_1 + s(x_2)
+\end{align*}
+
+The advantage of partial linear models is that it reduces the number of parameters (including those for fitting the splines) to be estimated by assuming linear correlation with response for some covariates.
+
+### Additive model
+
+Another (popular) option is not to assume linearity for any covariates. In contrary to single index models, additive models is more flexible by allowing each covariate to have different "trend shapes" related to the response, with form $m(\mathbf{x}) = \beta_0 + g_1(x_1) + g_2(x_2)$ and fit hence given by
+\vspace{0em}
+\begin{align*}
+  \hat{m}(\mathbf{x}) = \hat{\beta}_0 + s_1(x_1) + s_2(x_2)
+\end{align*}
+
+where $s_1, s_2$ are penalised cubic regression splines to estimate the unknown functions $g_1, g_2$.
+
+## Evaluation of multivariate regression methods
+
+```{r multivar-repeat-eval, echo = FALSE, dpi = 400, fig.height = 3.1, fig.cap = "The predictive power of parametric and semiparametric regressions in 100 training/test samples."}
+```
+
+# Conclusion
+
+Our main realisation from this project is that, under almost all cases, non(semi)parametric models are at least non-inferior to parametric ones under purely predictive (non-explanatory) contexts. In contrary to some prejudiced opinions (including myself) that non(semi)parametric methods often overfit linear dependency, we have shown that non(semi)parametric methods are robust even if the underlying relationship is about linear, not mentioning non(semi)parametric models excel at capturing non-linear relationships. It seems like the only major limiting factors for always using non(semi)parametric approaches for prediction are: (1) efficiency of computation of fitting non(semi)parametric model for very large data sets; (2) slower rate of convergence compared to parametric models thus often requires larger sample sizes to achieve satisfactory results.
+
+# Open and reproducible work
+
+The source code for reproducing the report, slide and the output of the project and history of all edits are available at the GitHub repository [szmsu2011/mast90111proj](https://github.com/szmsu2011/mast90111proj).
 
 \newpage
 
